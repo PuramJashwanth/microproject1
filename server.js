@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+
+
 let jwt = require('jsonwebtoken');
 let config = require('./config');
 let middleware = require('./middleware');
@@ -45,20 +47,18 @@ class HandlerGenerator {
     });
   }
 }
-
-// Starting point of the server
 function main () {
   let app = express(); // Export app for other routes to use
   let handlers = new HandlerGenerator();
-  const port = 200;
+  const port=300;
   app.use(bodyParser.urlencoded({ // Middleware
-    extended: true
+  extended: true
   }));
   app.use(bodyParser.json());
   // Routes & Handlers
   app.post('/login', handlers.login);
   app.get('/', middleware.checkToken, handlers.index);
   app.listen(port, () => console.log(`Server is listening on port: ${port}`));
-}
-
-main();
+  }
+  
+  main();

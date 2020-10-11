@@ -4,10 +4,16 @@ const bodyParser=require('body-parser');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 const MongoClient=require('Mongodb').MongoClient;
+
 let server=require('./server');
 let config=require('./config');
 let middleware=require('./middleware');
+
+
+
+
 const response=require('express');
+
 const url='mongodb://127.0.0.1:27017';
 const dbn='hospitals';
 let db
@@ -19,11 +25,17 @@ MongoClient.connect(url,{ useUnifiedTopology:true } ,(err,client) =>
     console.log('database : '+dbn);
 });
 
+
+//this will give hospital details
+
 app.get('/hospital', middleware.checkToken, function(req, res) {
     var da= db.collection("hospital").find().toArray()
     .then(result=>  res.json(result));
     console.log('fetching details of hospital',da);
   });
+
+
+//this will givventilator details
 
   app.get('/ventilators',middleware.checkToken, function(req, res) {
     var da= db.collection("ventilators").find().toArray()
@@ -31,18 +43,24 @@ app.get('/hospital', middleware.checkToken, function(req, res) {
     console.log('fetching details of ventilator',da);
   });
 
+//this serach ventilatoors
+
+
 app.post('/searchventilator',middleware.checkToken, (req,res) =>{
       var status=req.body.status;
       console.log(status);
       var ventilators=db.collection('ventilators')
       .find({"status": status}).toArray().then(result=>res.json(result));
 });
+
 app.post('/searchventilators',middleware.checkToken,(req,res) => {
   var Name=req.query.Name;
   console.log(Name);
   var ventilators= db.collection('ventilators')
-  .find({"Name":new RegExp(Name,'i')}).toArray().then(result=>res.json(result));
+  .find({"name":new RegExp(Name,'i')}).toArray().then(result=>res.json(result));
 });
+
+//update
 app.put('/update',middleware.checkToken,(req,res) => {
   var ventid={ventid: req.body.ventid};
   console.log(ventid);
@@ -51,6 +69,7 @@ app.put('/update',middleware.checkToken,(req,res) => {
     res.json('1 document updated');
   });
 });
+//
 app.post('/add',middleware.checkToken,(req,res)=>{
   var hid=req.body.hid;
   var ventid=req.body.ventid;
